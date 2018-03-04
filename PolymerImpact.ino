@@ -1,8 +1,7 @@
 #include <Wire.h>
-
 #include <Encoder.h>
-
 #include <Adafruit_RGBLCDShield.h>
+#include <utility/Adafruit_MCP23017.h>
 
 
 /*
@@ -16,6 +15,20 @@ ToDo: New display output
       height output
       
 **/
+
+Adafruit_RGBShield lcd = Adafruit_RGBLCDShield();
+
+#define OFF 0x0
+#define RED 0x1
+#define YELLOW 0x3
+#define GREEN 0x2
+#define TEAL 0x6
+#define BLUE 0x4
+#define VIOLET 0x5
+#define WHITE 0x7
+
+
+  
 
 int latchPin = 4; // output pin for arduino but an input for the latch
                   // output of latch goes to ground
@@ -54,32 +67,88 @@ Encoder myEnc(2, 3); //these are the pins that the encoder is using to communica
 It looks like this function sets the latch pin to an output and begins the serial connection at a 9600 BAUD
 There is also a line for myserial that was never defined and therefore I have no clue what it's for hence why it is commented out.
 **/
-void setup() {
-  // put your setup code here, to run once:
-  Serial.begin(9600);
-  pinMode(latchPin, OUTPUT);           //Sets the pin as an output
-  lcd.begin(16, 2);
-  //Serial.println("Basic Encoder Test:");
-  //mySerial.begin(9600); // set up serial port for 9600 baud
-}//end setup
 
+/**
+The entire program is going to need to go into the setup function as the loop will continuously loop until reset. This is not the behaviour that is desired so there will need to bemultiple loops created in the setup function that will handle all the reading. 
+Need to find what the call for reset is.
+the reset should do a full system reboot or shoot out to the inital init stuff. 
+
+when booting up the screen will be red and change to green when ready for user input. 
+the screen will be green until a selection for theta has been pressed which will turn it yellow
+when select gets pressed and the test starts the screen will change from yellow to blue to teal to green when it displays the final output.
+when reset get pressed then it starts over.
+
+theta will remain on top row
+output will be display on row 2
+it will remain until reset is pressed. 
+**/
+
+void setup(){
+  //debugging output
+  Serial.begin(9600);
+  pinMode(latchPin, OUTPUT);
+  //set LCD columns and rows
+  lcd.begin(16, 2);
+  
+  //print a test message to the LCD
+  lcd.print("Booting up, Please Hold");
+  
+  delay(2);
+  
+  //clear the lcd
+  lcd.clear();
+  //set the cursor to column 0, liine 0
+  lcd.setCursor(0, 0);
+  
+  uint8_t buttons = lcd.readButtons();
+
+  if (buttons) {
+    while(true){
+      if (buttons & BUTTON_UP) {
+        //set height to 75
+        Hint = h75;
+        lcd.print("Theta = 75");
+      }
+      if buttons & BUTTON_RIGHT) {
+        //set theta to 60
+        Hint = h60;
+        lcd.print("Theta = 60");
+      }
+      if (buttons & BUTTON_DOWN) {
+        //set theta to 45
+        Hint = h45;
+        lcd.print("Theta = 45");
+      }
+      if (buttons & BUTTON_LEFT) {
+        //set theta to 30
+        Hint = h30;
+        lcd.print("Theta = 30");
+      }
+      if (buttons & BUTTON_SELECT) {
+        false;
+      }
+    }
+  }
+  
+}//endsetup
+      
 /**
 this function sets the value of Hinit based on what was selected (p)
 **/
-void variableh(int p){
- if p = 30{
-   Hinit = h30;
- }//endif
- else if p = 45{
-   Hinit = h45;
- }//end elif
- else if p = 60{
-   Hinit = h60;
- }//end elif
- else if p = 75{
-   Hinit = h75;
- }//end elif
-}//end variableh
+//void variableh(int p){
+// if p = 30{
+//   Hinit = h30;
+// }//endif
+// else if p = 45{
+//   Hinit = h45;
+// }//end elif
+// else if p = 60{
+//   Hinit = h60;
+// }//end elif
+// else if p = 75{
+//   Hinit = h75;
+// }//end elif
+//}//end variableh
 
 /**
 This function is where the magic happens. It starts by releasing the latch then taking new position from the encoder.
@@ -116,58 +185,95 @@ void loop() {
   delay(100);
 }//end loop
 
-//shouldn't need to touch below this
-//SerialLCD Functions
-void selectLineOne(){  //puts the cursor at line 0 char 0.
-   Serial.write(0xFE);   //command flag
-   Serial.write(128);    //position
-}
-void selectLineTwo(){  //puts the cursor at line 2 char 0.
-   Serial.write(0xFE);   //command flag
-   Serial.write(192);    //position
-}
-void selectLineThree(){  //puts the cursor at line 3 char 0.
-   Serial.write(0xFE);   //command flag
-   Serial.write(148);    //position
-}
-void selectLineFour(){  //puts the cursor at line 4 char 0.
-   Serial.write(0xFE);   //command flag
-   Serial.write(212);    //position
-}
-void goTo(int position) { //position = line 1: 0-19, line 2: 20-39, etc, 79+ defaults back to 0
-    if (position<20){ Serial.write(0xFE);   //command flag
-                  Serial.write((position+128));    //position
+//handles the buttons. 
+uint8_t buttons = lcd.readButtons();
+ 
+  if (buttons) {
+    if (buttons & BUTTON_UP) {
+      lcd.setBacklight(RED);
     }
-    else if (position<40){Serial.write(0xFE);   //command flag
-                  Serial.write((position+128+64-20));    //position 
+    if (buttons & BUTTON_DOWN) {
+      lcd.setBacklight(YELLOW);
     }
-    else if (position<60){Serial.write(0xFE);   //command flag
-                  Serial.write((position+128+20-40));    //position
+    if (buttons & BUTTON_LEFT) {
+      lcd.setBacklight(GREEN);
     }
-    else if (position<80){Serial.write(0xFE);   //command flag
-                  Serial.write((position+128+84-60));    //position              
+    if (buttons & BUTTON_RIGHT) {
+      lcd.setBacklight(TEAL);
     }
-    else { goTo(0); }
-}
-void clearLCD(){
-   Serial.write(0xFE);   //command flag
-   Serial.write(0x01);   //clear command.
-}
-void backlightOn(){  //turns on the backlight
-    Serial.write(0x7C);   //command flag for backlight stuff
-    Serial.write(157);    //light level.
-}
-void backlightOff(){  //turns off the backlight
-    Serial.write(0x7C);   //command flag for backlight stuff
-    Serial.write(128);     //light level for off.
-}
-void backlight50(){  //sets the backlight at 50% brightness
-    Serial.write(0x7C);   //command flag for backlight stuff
-    Serial.write(143);     //light level for off.
-}
-void serCommand(){   //a general function to call the command flag for issuing all other commands   
-  Serial.write(0xFE);
-}
+    if (buttons & BUTTON_SELECT) {
+      lcd.setBacklight(VIOLET);
+    }
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//
+////shouldn't need to touch below this
+////SerialLCD Functions
+//void selectLineOne(){  //puts the cursor at line 0 char 0.
+//   Serial.write(0xFE);   //command flag
+//   Serial.write(128);    //position
+//}
+//void selectLineTwo(){  //puts the cursor at line 2 char 0.
+//   Serial.write(0xFE);   //command flag
+//   Serial.write(192);    //position
+//}
+//void selectLineThree(){  //puts the cursor at line 3 char 0.
+//   Serial.write(0xFE);   //command flag
+//   Serial.write(148);    //position
+//}
+//void selectLineFour(){  //puts the cursor at line 4 char 0.
+//   Serial.write(0xFE);   //command flag
+//   Serial.write(212);    //position
+//}
+//void goTo(int position) { //position = line 1: 0-19, line 2: 20-39, etc, 79+ defaults back to 0
+//    if (position<20){ Serial.write(0xFE);   //command flag
+//                  Serial.write((position+128));    //position
+//    }
+//    else if (position<40){Serial.write(0xFE);   //command flag
+//                  Serial.write((position+128+64-20));    //position 
+//    }
+//    else if (position<60){Serial.write(0xFE);   //command flag
+//                  Serial.write((position+128+20-40));    //position
+//    }
+//    else if (position<80){Serial.write(0xFE);   //command flag
+//                  Serial.write((position+128+84-60));    //position              
+//    }
+//    else { goTo(0); }
+//}
+//void clearLCD(){
+//   Serial.write(0xFE);   //command flag
+//   Serial.write(0x01);   //clear command.
+//}
+//void backlightOn(){  //turns on the backlight
+//    Serial.write(0x7C);   //command flag for backlight stuff
+//    Serial.write(157);    //light level.
+//}
+//void backlightOff(){  //turns off the backlight
+//    Serial.write(0x7C);   //command flag for backlight stuff
+//    Serial.write(128);     //light level for off.
+//}
+//void backlight50(){  //sets the backlight at 50% brightness
+//    Serial.write(0x7C);   //command flag for backlight stuff
+//    Serial.write(143);     //light level for off.
+//}
+//void serCommand(){   //a general function to call the command flag for issuing all other commands   
+//  Serial.write(0xFE);
+//}
 
 
 
