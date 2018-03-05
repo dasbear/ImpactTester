@@ -103,7 +103,7 @@ void setup(){
   uint8_t buttons = lcd.readButtons();
 
   if (buttons) {
-    while(true){
+    while(True){
       if (buttons & BUTTON_UP) {
         //set height to 75
         Hint = h75;
@@ -125,10 +125,60 @@ void setup(){
         lcd.print("Theta = 30");
       }
       if (buttons & BUTTON_SELECT) {
-        false;
+        False;
       }
     }
   }
+  While (True){    
+        digitalWrite(latchPin, HIGH);   //looks like this line releases the latch. This is where it will output current on the latchpin 
+
+        long newPosition = myEnc.read();    //this is reading in the position from a sensor called myEnc on pins 2 and 3
+        if (newPosition != oldPosition and newPosition > oldPosition  ) { //if newposition is actually new
+            sensValue = newPosition;  
+          oldPosition = newPosition;
+          theta = sensValue*360/4096; //setting theta
+          // calculates maximum angle (deg) pendulum reaches
+          //new calculations follow
+          Hf = r - r * cos(theta);
+          Hchange = Hinit - Hf;
+          E = mass * gravity * Hchange;
+          //new calcs end
+        }
+        clearLCD();
+        backlightOn();
+        selectLineOne();
+        delay(100);
+        //Serial.print("Angle (deg):  ");
+        //Serial.print(theta);
+        lcd.print(sensValue);
+        lcd.print("Energy:  " + E);
+        //Serial.print(E);
+        delay(100);
+        if (buttons & BUTTON_SELECT){
+              FALSE;
+        }//endif
+      }//end loop
+
+      //handles the buttons. 
+      /*uint8_t buttons = lcd.readButtons();
+
+        if (buttons) {
+          if (buttons & BUTTON_UP) {
+            lcd.setBacklight(RED);
+          }
+          if (buttons & BUTTON_DOWN) {
+            lcd.setBacklight(YELLOW);
+          }
+          if (buttons & BUTTON_LEFT) {
+            lcd.setBacklight(GREEN);
+          }
+          if (buttons & BUTTON_RIGHT) {
+            lcd.setBacklight(TEAL);
+          }
+          if (buttons & BUTTON_SELECT) {
+            lcd.setBacklight(VIOLET);
+          }
+        }*/
   
 }//endsetup
       
@@ -157,7 +207,7 @@ the next line calculates the final height angle
 the last line in the if statement calculates the energy
 outside the if it displays the angle and the energy that was calculated
 **/
-void loop() { 
+void loop() { /*
 
   digitalWrite(latchPin, HIGH);   //looks like this line releases the latch. This is where it will output current on the latchpin 
   
@@ -203,7 +253,7 @@ uint8_t buttons = lcd.readButtons();
     }
     if (buttons & BUTTON_SELECT) {
       lcd.setBacklight(VIOLET);
-    }
+    }*/
   }
 
 
