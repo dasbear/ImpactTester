@@ -1,22 +1,13 @@
+#include <Adafruit_RGBLCDShield.h>
 #include <Wire.h>
 #include <Encoder.h>
-#include <Adafruit_RGBLCDShield.h>
 #include <utility/Adafruit_MCP23017.h>
 
 
 /*
-should be able to select a variable height using the buttons on the new display. that variable height will go into play with the calculation of the energy. Need to also record the max height the mass goes on the follow through. 
-*/
+should be able to select a variable height using the buttons on the new display. that variable height will go into play with the calculation of the energy. Need to also record the max height the mass goes on the follow through */
 
-/**
-ToDo: New display output
-      Button variables
-      energy calculation and output
-      height output
-      
-**/
-
-Adafruit_RGBShield lcd = Adafruit_RGBLCDShield();
+Adafruit_RGBLCDShield lcd = Adafruit_RGBLCDShield();
 
 //setting up colors to use for the screen
 #define OFF 0x0
@@ -29,7 +20,7 @@ Adafruit_RGBShield lcd = Adafruit_RGBLCDShield();
 #define WHITE 0x7
 
 
-  
+void setup(){  
 
 int latchPin = 4; // output pin for arduino but an input for the latch
                   // output of latch goes to ground
@@ -43,18 +34,18 @@ const int Pi = 3.14159;
 
 
 //these are where the variables for h are set. if there are any changes to the impact device are this is used on a different device these will need to be adjusted in order for the calculations to be accurate
-double Hinit = 0;  //h initial
-double h30 = 0.7;  //h variable 30
-double h45 = 0;  //h variable 45
-double h60 = 0;  //h variable 60
-double h75 = 0;  //h variable 75
+int Hinit = 0;  //h initial
+int h30 = 0.7;  //h variable 30
+int h45 = 0;  //h variable 45
+int h60 = 0;  //h variable 60
+int h75 = 0;  //h variable 75
 
 //this is the radius/arm length for the mass
-double r = 0.4; //r
+int r = 0.4; //r
 
-double Hf;
-double Hchange;
-double E;
+int Hf;
+int Hchange;
+int E;
 
 //if the mass changes this will need to be adjusted
 double mass = 2.16;
@@ -85,7 +76,7 @@ it will remain until reset is pressed.
 
 /******************************COLORS ARE NOT WORKING CURRENTLY**************************/
 
-void setup(){
+
   //debugging output
   Serial.begin(9600);
   pinMode(latchPin, OUTPUT);
@@ -105,33 +96,33 @@ void setup(){
   uint8_t buttons = lcd.readButtons(); //setting up buttons
 
   if (buttons) { //setting the buttons and waiting for input as to wait value to set Hinit
-    while(True){
+    while(true){
       if (buttons & BUTTON_UP) {
         //set height to 75
-        Hint = h75;
+        Hinit = h75;
         lcd.print("Theta = 75");
       }
-      if buttons & BUTTON_RIGHT) {
+      if (buttons & BUTTON_RIGHT) {
         //set theta to 60
-        Hint = h60;
+        Hinit = h60;
         lcd.print("Theta = 60");
       }
       if (buttons & BUTTON_DOWN) {
         //set theta to 45
-        Hint = h45;
+        Hinit = h45;
         lcd.print("Theta = 45");
       }
       if (buttons & BUTTON_LEFT) {
         //set theta to 30
-        Hint = h30;
+        Hinit = h30;
         lcd.print("Theta = 30");
       }
       if (buttons & BUTTON_SELECT) {
-        False;
+        false;
       }
     }
   }
-  While (True){    
+  while (true){    
         digitalWrite(latchPin, HIGH);   //looks like this line releases the latch. This is where it will output current on the latchpin 
 
         long newPosition = myEnc.read();    //this is reading in the position from a sensor called myEnc on pins 2 and 3
@@ -154,10 +145,10 @@ void setup(){
         //Serial.print(theta);
         lcd.setCursor(0,1); //setting cursor to the second line of screen
         //lcd.print(sensValue);
-        lcd.print("Energy:  " + E); //print out the answer they are looking for
+        lcd.print(E); //print out the answer they are looking for
         delay(100); //idk if this is still needed
         if (buttons & BUTTON_SELECT){  //trying to escape loop
-              FALSE;
+              false;
         }//endif
       }//end loop  
 }//endsetup
