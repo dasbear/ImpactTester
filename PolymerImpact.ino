@@ -18,6 +18,7 @@ ToDo: New display output
 
 Adafruit_RGBShield lcd = Adafruit_RGBLCDShield();
 
+//setting up colors to use for the screen
 #define OFF 0x0
 #define RED 0x1
 #define YELLOW 0x3
@@ -60,8 +61,7 @@ double mass = 2.16;
 
 double gravity = 9.81;
 
-Encoder myEnc(2, 3); //these are the pins that the encoder is using to communicate with the board
-//   avoid using pins with LEDs attached
+Encoder myEnc(2, 3); //these are the pins that the encoder is using to communicate with the board. avoid using pins with LEDs attached
 
 /**
 It looks like this function sets the latch pin to an output and begins the serial connection at a 9600 BAUD
@@ -83,6 +83,8 @@ output will be display on row 2
 it will remain until reset is pressed. 
 **/
 
+/******************************COLORS ARE NOT WORKING CURRENTLY**************************/
+
 void setup(){
   //debugging output
   Serial.begin(9600);
@@ -97,12 +99,12 @@ void setup(){
   
   //clear the lcd
   lcd.clear();
-  //set the cursor to column 0, liine 0
-  lcd.setCursor(0, 0);
+  //set the cursor to column 0, line 0
+  lcd.setCursor(0, 0); //setting screen to write at the top row
   
-  uint8_t buttons = lcd.readButtons();
+  uint8_t buttons = lcd.readButtons(); //setting up buttons
 
-  if (buttons) {
+  if (buttons) { //setting the buttons and waiting for input as to wait value to set Hinit
     while(True){
       if (buttons & BUTTON_UP) {
         //set height to 75
@@ -144,44 +146,29 @@ void setup(){
           E = mass * gravity * Hchange;
           //new calcs end
         }
-        clearLCD();
-        backlightOn();
-        selectLineOne();
-        delay(100);
+        //clearLCD();
+        //backlightOn();
+        //selectLineOne();
+        //delay(100);
         //Serial.print("Angle (deg):  ");
         //Serial.print(theta);
-        lcd.print(sensValue);
-        lcd.print("Energy:  " + E);
-        //Serial.print(E);
-        delay(100);
-        if (buttons & BUTTON_SELECT){
+        lcd.setCursor(0,1); //setting cursor to the second line of screen
+        //lcd.print(sensValue);
+        lcd.print("Energy:  " + E); //print out the answer they are looking for
+        delay(100); //idk if this is still needed
+        if (buttons & BUTTON_SELECT){  //trying to escape loop
               FALSE;
         }//endif
-      }//end loop
-
-      //handles the buttons. 
-      /*uint8_t buttons = lcd.readButtons();
-
-        if (buttons) {
-          if (buttons & BUTTON_UP) {
-            lcd.setBacklight(RED);
-          }
-          if (buttons & BUTTON_DOWN) {
-            lcd.setBacklight(YELLOW);
-          }
-          if (buttons & BUTTON_LEFT) {
-            lcd.setBacklight(GREEN);
-          }
-          if (buttons & BUTTON_RIGHT) {
-            lcd.setBacklight(TEAL);
-          }
-          if (buttons & BUTTON_SELECT) {
-            lcd.setBacklight(VIOLET);
-          }
-        }*/
-  
+      }//end loop  
 }//endsetup
-      
+  
+
+
+void loop() {} // left because idk if it needs this in order to run. safer to just leave for now
+
+
+////////////////Everything below this should no longer need to be here. Leaving for now. Will clean after testing. ///////////////////
+
 /**
 this function sets the value of Hinit based on what was selected (p)
 **/
@@ -207,8 +194,8 @@ the next line calculates the final height angle
 the last line in the if statement calculates the energy
 outside the if it displays the angle and the energy that was calculated
 **/
-void loop() { /*
 
+/*
   digitalWrite(latchPin, HIGH);   //looks like this line releases the latch. This is where it will output current on the latchpin 
   
   long newPosition = myEnc.read();    //this is reading in the position from a sensor called myEnc on pins 2 and 3
@@ -254,22 +241,7 @@ uint8_t buttons = lcd.readButtons();
     if (buttons & BUTTON_SELECT) {
       lcd.setBacklight(VIOLET);
     }*/
-  }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+  //}//
 
 //
 ////shouldn't need to touch below this
