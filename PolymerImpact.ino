@@ -79,7 +79,15 @@ void setup(){
   //set the cursor to column 0, line 0
   lcd.setCursor(0, 0); //setting screen to write at the top row
   bool x = true;
-  uint8_t buttons = lcd.readButtons(); //setting up buttons
+  
+  
+  
+}//endsetup
+  
+
+
+void loop() {
+uint8_t buttons = lcd.readButtons(); //setting up buttons
   //while(true){
     if (buttons) { //setting the buttons and waiting for input as to wait value to set Hinit
     lcd.print("inside loop 1");
@@ -131,12 +139,7 @@ void setup(){
               x = true;
         }//endif
       }//end loop 
-  
-}//endsetup
-  
-
-
-void loop() {} // left because idk if it needs this in order to run. safer to just leave for now
+} // left because idk if it needs this in order to run. safer to just leave for now
 
 
 
