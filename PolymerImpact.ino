@@ -6,59 +6,6 @@
 
 /*
 should be able to select a variable height using the buttons on the new display. that variable height will go into play with the calculation of the energy. Need to also record the max height the mass goes on the follow through */
-
-Adafruit_RGBLCDShield lcd = Adafruit_RGBLCDShield();
-
-//setting up colors to use for the screen
-#define OFF 0x0
-#define RED 0x1
-#define YELLOW 0x3
-#define GREEN 0x2
-#define TEAL 0x6
-#define BLUE 0x4
-#define VIOLET 0x5
-#define WHITE 0x7
-
-
-void setup(){  
-
-int latchPin = 4; // output pin for arduino but an input for the latch
-                  // output of latch goes to ground
-                  
-long oldPosition  = -999;
-int maxHeight;
-long sensValue = 0;
-double sensor;
-double theta;
-const int Pi = 3.14159; 
-
-
-//these are where the variables for h are set. if there are any changes to the impact device are this is used on a different device these will need to be adjusted in order for the calculations to be accurate
-int Hinit = 0;  //h initial
-int h30 = 0.6;  //h variable 30
-int h45 = 0.6828;  //h variable 45
-int h60 = 0.7464;  //h variable 60
-int h75 = 0.7864;  //h variable 75
-
-//this is the radius/arm length for the mass
-int r = 0.4; //r
-
-int Hf;
-int Hchange;
-int E;
-
-//if the mass changes this will need to be adjusted
-double mass = 2.73;
-
-double gravity = 9.81;
-
-Encoder myEnc(2, 3); //these are the pins that the encoder is using to communicate with the board. avoid using pins with LEDs attached
-
-/**
-It looks like this function sets the latch pin to an output and begins the serial connection at a 9600 BAUD
-There is also a line for myserial that was never defined and therefore I have no clue what it's for hence why it is commented out.
-**/
-
 /**
 The entire program is going to need to go into the setup function as the loop will continuously loop until reset. This is not the behaviour that is desired so there will need to bemultiple loops created in the setup function that will handle all the reading. 
 Need to find what the call for reset is.
@@ -73,9 +20,50 @@ theta will remain on top row
 output will be display on row 2
 it will remain until reset is pressed. 
 **/
+Adafruit_RGBLCDShield lcd = Adafruit_RGBLCDShield();
 
+//setting up colors to use for the screen
+#define OFF 0x0
+#define RED 0x1
+#define YELLOW 0x3
+#define GREEN 0x2
+#define TEAL 0x6
+#define BLUE 0x4
+#define VIOLET 0x5
+#define WHITE 0x7
 /******************************COLORS ARE NOT WORKING CURRENTLY**************************/
 
+void setup(){  
+
+
+  long oldPosition  = -999;
+  int maxHeight;
+  long sensValue = 0;
+  double sensor;
+  double theta;
+  const int Pi = 3.14159; 
+
+
+  //these are where the variables for h are set. if there are any changes to the impact device are this is used on a different device these will need to be adjusted in order for the calculations to be accurate
+  int Hinit = 0;  //h initial
+  int h30 = 0.6;  //h variable 30
+  int h45 = 0.6828;  //h variable 45
+  int h60 = 0.7464;  //h variable 60
+  int h75 = 0.7864;  //h variable 75
+
+  //this is the radius/arm length for the mass
+  int r = 0.4; //r
+
+  int Hf;
+  int Hchange;
+  int E;
+
+  //if the mass changes this will need to be adjusted
+  double mass = 2.73;
+
+  double gravity = 9.81;
+
+  Encoder myEnc(2, 3); //these are the pins that the encoder is using to communicate with the board. avoid using pins with LEDs attached
 
   //debugging output
   Serial.begin(9600);
@@ -96,6 +84,7 @@ it will remain until reset is pressed.
   uint8_t buttons = lcd.readButtons(); //setting up buttons
   while(true){
     //if (buttons) { //setting the buttons and waiting for input as to wait value to set Hinit
+    lcd.print("inside loop 1");
       if (buttons & BUTTON_UP) {
         //set height to 75
         Hinit = h75;
@@ -121,31 +110,25 @@ it will remain until reset is pressed.
       }
    // }
   }
-     while (false){    
-        digitalWrite(latchPin, HIGH);   //looks like this line releases the latch. This is where it will output current on the latchpin 
-
+     while (false){
+       lcd.setCursor(0,1); //setting cursor to the second line of screen
+       lcd.print("inside loop2");
         long newPosition = myEnc.read();    //this is reading in the position from a sensor called myEnc on pins 2 and 3
         if (newPosition != oldPosition and newPosition > oldPosition  ) { //if newposition is actually new
             sensValue = newPosition;  
-          oldPosition = newPosition;
-          theta = sensValue*360/4096; //setting theta
-          // calculates maximum angle (deg) pendulum reaches
-          //new calculations follow
-          Hf = r * sin(theta);
-          Hchange = Hinit - Hf;
-          E = mass * gravity * Hchange;
-          //new calcs end
+            oldPosition = newPosition;
+            theta = sensValue*360/4096; //setting theta
+            // calculates maximum angle (deg) pendulum reaches
+            //new calculations follow
+            Hf = r * sin(theta);
+            Hchange = Hinit - Hf;
+            E = mass * gravity * Hchange;
+            //new calcs end
         }
         //clearLCD();
-        //backlightOn();
-        //selectLineOne();
-        //delay(100);
-        //Serial.print("Angle (deg):  ");
-        //Serial.print(theta);
-        lcd.setCursor(0,1); //setting cursor to the second line of screen
         //lcd.print(sensValue);
         lcd.print(E); //print out the answer they are looking for
-        delay(100); //idk if this is still needed
+        //delay(100); //idk if this is still needed
         if (buttons & BUTTON_SELECT){  //trying to escape loop
               true;
         }//endif
@@ -156,6 +139,9 @@ it will remain until reset is pressed.
 
 
 void loop() {} // left because idk if it needs this in order to run. safer to just leave for now
+
+
+
 
 
 ////////////////Everything below this should no longer need to be here. Leaving for now. Will clean after testing. ///////////////////
