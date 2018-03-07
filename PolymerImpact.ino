@@ -121,8 +121,8 @@ it will remain until reset is pressed.
         false;
       }
     }
-  }
-  while (true){    
+  
+     while (false){    
         digitalWrite(latchPin, HIGH);   //looks like this line releases the latch. This is where it will output current on the latchpin 
 
         long newPosition = myEnc.read();    //this is reading in the position from a sensor called myEnc on pins 2 and 3
@@ -148,9 +148,10 @@ it will remain until reset is pressed.
         lcd.print(E); //print out the answer they are looking for
         delay(100); //idk if this is still needed
         if (buttons & BUTTON_SELECT){  //trying to escape loop
-              false;
+              true;
         }//endif
-      }//end loop  
+      }//end loop 
+  }
 }//endsetup
   
 
