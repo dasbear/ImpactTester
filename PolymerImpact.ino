@@ -94,9 +94,8 @@ it will remain until reset is pressed.
   lcd.setCursor(0, 0); //setting screen to write at the top row
   
   uint8_t buttons = lcd.readButtons(); //setting up buttons
-
-  if (buttons) { //setting the buttons and waiting for input as to wait value to set Hinit
-    while(true){
+  while(true){
+    //if (buttons) { //setting the buttons and waiting for input as to wait value to set Hinit
       if (buttons & BUTTON_UP) {
         //set height to 75
         Hinit = h75;
@@ -120,8 +119,8 @@ it will remain until reset is pressed.
       if (buttons & BUTTON_SELECT) {
         false;
       }
-    }
-  
+   // }
+  }
      while (false){    
         digitalWrite(latchPin, HIGH);   //looks like this line releases the latch. This is where it will output current on the latchpin 
 
@@ -151,7 +150,7 @@ it will remain until reset is pressed.
               true;
         }//endif
       }//end loop 
-  }
+  
 }//endsetup
   
 
