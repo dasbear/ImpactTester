@@ -78,37 +78,37 @@ void setup(){
   lcd.clear();
   //set the cursor to column 0, line 0
   lcd.setCursor(0, 0); //setting screen to write at the top row
-  
+  bool x = true;
   uint8_t buttons = lcd.readButtons(); //setting up buttons
-  while(true){
-    //if (buttons) { //setting the buttons and waiting for input as to wait value to set Hinit
+  //while(true){
+    if (buttons) { //setting the buttons and waiting for input as to wait value to set Hinit
     lcd.print("inside loop 1");
-      if (BUTTON_UP) {
+      if (buttons & BUTTON_UP) {
         //set height to 75
         Hinit = h75;
         lcd.print("Theta = 75");
       }
-      if (BUTTON_RIGHT) {
+      if (buttons & BUTTON_RIGHT) {
         //set theta to 60
         Hinit = h60;
         lcd.print("Theta = 60");
       }
-      if (BUTTON_DOWN) {
+      if (buttons & BUTTON_DOWN) {
         //set theta to 45
         Hinit = h45;
         lcd.print("Theta = 45");
       }
-      if (BUTTON_LEFT) {
+      if (buttons & BUTTON_LEFT) {
         //set theta to 30
         Hinit = h30;
         lcd.print("Theta = 30");
       }
-      if (BUTTON_SELECT) {
-        false;
+      if (buttons & BUTTON_SELECT) {
+        x = false;
       }
-   // }
-  }
-     while (false){
+    }
+  //}
+     while (x == false){
        lcd.setCursor(0,1); //setting cursor to the second line of screen
        lcd.print("inside loop2");
         long newPosition = myEnc.read();    //this is reading in the position from a sensor called myEnc on pins 2 and 3
@@ -128,7 +128,7 @@ void setup(){
         lcd.print(E); //print out the answer they are looking for
         //delay(100); //idk if this is still needed
         if (buttons & BUTTON_SELECT){  //trying to escape loop
-              true;
+              x = true;
         }//endif
       }//end loop 
   
