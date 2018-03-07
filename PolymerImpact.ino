@@ -32,10 +32,6 @@ Adafruit_RGBLCDShield lcd = Adafruit_RGBLCDShield();
 #define VIOLET 0x5
 #define WHITE 0x7
 /******************************COLORS ARE NOT WORKING CURRENTLY**************************/
-
-void setup(){  
-
-
   long oldPosition  = -999;
   int maxHeight;
   long sensValue = 0;
@@ -64,6 +60,10 @@ void setup(){
   double gravity = 9.81;
 
   Encoder myEnc(2, 3); //these are the pins that the encoder is using to communicate with the board. avoid using pins with LEDs attached
+
+void setup(){  
+
+
 
   
   //set LCD columns and rows
