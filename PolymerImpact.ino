@@ -83,27 +83,27 @@ void setup(){
   while(true){
     //if (buttons) { //setting the buttons and waiting for input as to wait value to set Hinit
     lcd.print("inside loop 1");
-      if (buttons & BUTTON_UP) {
+      if (BUTTON_UP) {
         //set height to 75
         Hinit = h75;
         lcd.print("Theta = 75");
       }
-      if (buttons & BUTTON_RIGHT) {
+      if (BUTTON_RIGHT) {
         //set theta to 60
         Hinit = h60;
         lcd.print("Theta = 60");
       }
-      if (buttons & BUTTON_DOWN) {
+      if (BUTTON_DOWN) {
         //set theta to 45
         Hinit = h45;
         lcd.print("Theta = 45");
       }
-      if (buttons & BUTTON_LEFT) {
+      if (BUTTON_LEFT) {
         //set theta to 30
         Hinit = h30;
         lcd.print("Theta = 30");
       }
-      if (buttons & BUTTON_SELECT) {
+      if (BUTTON_SELECT) {
         false;
       }
    // }
