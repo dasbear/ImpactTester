@@ -59,6 +59,8 @@ Adafruit_RGBLCDShield lcd = Adafruit_RGBLCDShield();
 
   double gravity = 9.81;
 
+  bool x = true;
+
   Encoder myEnc(2, 3); //these are the pins that the encoder is using to communicate with the board. avoid using pins with LEDs attached
 
 void setup(){  
@@ -78,7 +80,7 @@ void setup(){
   lcd.clear();
   //set the cursor to column 0, line 0
   lcd.setCursor(0, 0); //setting screen to write at the top row
-  bool x = true;
+  
   
   
   
