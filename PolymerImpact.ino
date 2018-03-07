@@ -131,7 +131,7 @@ it will remain until reset is pressed.
           theta = sensValue*360/4096; //setting theta
           // calculates maximum angle (deg) pendulum reaches
           //new calculations follow
-          Hf = r - r * cos(theta);
+          Hf = r * sin(theta);
           Hchange = Hinit - Hf;
           E = mass * gravity * Hchange;
           //new calcs end
