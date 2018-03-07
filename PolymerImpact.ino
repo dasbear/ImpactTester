@@ -48,7 +48,7 @@ int Hchange;
 int E;
 
 //if the mass changes this will need to be adjusted
-double mass = 2.16;
+double mass = 2.73;
 
 double gravity = 9.81;
 
