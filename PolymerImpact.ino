@@ -65,9 +65,7 @@ void setup(){
 
   Encoder myEnc(2, 3); //these are the pins that the encoder is using to communicate with the board. avoid using pins with LEDs attached
 
-  //debugging output
-  Serial.begin(9600);
-  pinMode(latchPin, OUTPUT);
+  
   //set LCD columns and rows
   lcd.begin(16, 2);
   
