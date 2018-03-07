@@ -38,7 +38,7 @@ Adafruit_RGBLCDShield lcd = Adafruit_RGBLCDShield();
   double sensor;
   double theta;
   const int Pi = 3.14159; 
-
+  bool x = true;
 
   //these are where the variables for h are set. if there are any changes to the impact device are this is used on a different device these will need to be adjusted in order for the calculations to be accurate
   int Hinit = 0;  //h initial
@@ -49,25 +49,18 @@ Adafruit_RGBLCDShield lcd = Adafruit_RGBLCDShield();
 
   //this is the radius/arm length for the mass
   int r = 0.4; //r
-
   int Hf;
   int Hchange;
   int E;
 
   //if the mass changes this will need to be adjusted
   double mass = 2.73;
-
   double gravity = 9.81;
 
-  bool x = true;
+  //these are the pins that the encoder is using to communicate with the board. avoid using pins with LEDs attached
+  Encoder myEnc(2, 3); 
 
-  Encoder myEnc(2, 3); //these are the pins that the encoder is using to communicate with the board. avoid using pins with LEDs attached
-
-void setup(){  
-
-
-
-  
+void setup(){    
   //set LCD columns and rows
   lcd.begin(16, 2);
   
@@ -79,20 +72,14 @@ void setup(){
   //clear the lcd
   lcd.clear();
   //set the cursor to column 0, line 0
-  lcd.setCursor(0, 0); //setting screen to write at the top row
-  
-  
-  
-  
+  lcd.setCursor(0, 0); //setting screen to write at the top row 
 }//endsetup
   
 
 
 void loop() {
-uint8_t buttons = lcd.readButtons(); //setting up buttons
-  //while(true){
+    uint8_t buttons = lcd.readButtons(); //setting up buttons
     if (buttons) { //setting the buttons and waiting for input as to wait value to set Hinit
-    lcd.print("inside loop 1");
       if (buttons & BUTTON_UP) {
         //set height to 75
         Hinit = h75;
@@ -117,165 +104,31 @@ uint8_t buttons = lcd.readButtons(); //setting up buttons
         x = false;
       }
     }
-  //}
-     while (x == false){
+    while (x == false){
        lcd.setCursor(0,1); //setting cursor to the second line of screen
-       lcd.print("inside loop2");
-        long newPosition = myEnc.read();    //this is reading in the position from a sensor called myEnc on pins 2 and 3
-        if (newPosition != oldPosition and newPosition > oldPosition  ) { //if newposition is actually new
-            sensValue = newPosition;  
-            oldPosition = newPosition;
-            theta = sensValue*360/4096; //setting theta
-            // calculates maximum angle (deg) pendulum reaches
-            //new calculations follow
-            Hf = r * sin(theta);
-            Hchange = Hinit - Hf;
-            E = mass * gravity * Hchange;
-            //new calcs end
-        }
-        //clearLCD();
-        //lcd.print(sensValue);
-        lcd.print(E); //print out the answer they are looking for
-        //delay(100); //idk if this is still needed
-        if (buttons & BUTTON_SELECT){  //trying to escape loop
-              x = true;
-        }//endif
-      }//end loop 
-} // left because idk if it needs this in order to run. safer to just leave for now
-
-
-
-
-
-////////////////Everything below this should no longer need to be here. Leaving for now. Will clean after testing. ///////////////////
-
-/**
-this function sets the value of Hinit based on what was selected (p)
-**/
-//void variableh(int p){
-// if p = 30{
-//   Hinit = h30;
-// }//endif
-// else if p = 45{
-//   Hinit = h45;
-// }//end elif
-// else if p = 60{
-//   Hinit = h60;
-// }//end elif
-// else if p = 75{
-//   Hinit = h75;
-// }//end elif
-//}//end variableh
-
-/**
-This function is where the magic happens. It starts by releasing the latch then taking new position from the encoder.
-it checks the newposition to the oldposition and if it is a new position then it sets that as the old position to begin the loop again until the newpostion is no longer larger
-the next line calculates the final height angle
-the last line in the if statement calculates the energy
-outside the if it displays the angle and the energy that was calculated
-**/
-
-/*
-  digitalWrite(latchPin, HIGH);   //looks like this line releases the latch. This is where it will output current on the latchpin 
-  
-  long newPosition = myEnc.read();    //this is reading in the position from a sensor called myEnc on pins 2 and 3
-  if (newPosition != oldPosition and newPosition > oldPosition  ) { //if newposition is actually new
-      sensValue = newPosition;  
-    oldPosition = newPosition;
-    theta = sensValue*360/4096; //setting theta
-    // calculates maximum angle (deg) pendulum reaches
-    //new calculations follow
-    Hf = r - r * cos(theta);
-    Hchange = Hinit - Hf;
-    E = mass * gravity * Hchange;
-    //new calcs end
-  }
-  clearLCD();
-  backlightOn();
-  selectLineOne();
-  delay(100);
-  //Serial.print("Angle (deg):  ");
-  //Serial.print(theta);
-  Serial.print(sensValue);
-  //Serial.print("Energy:  ");
-  //Serial.print(E);
-  delay(100);
-}//end loop
-
-//handles the buttons. 
-uint8_t buttons = lcd.readButtons();
- 
-  if (buttons) {
-    if (buttons & BUTTON_UP) {
-      lcd.setBacklight(RED);
-    }
-    if (buttons & BUTTON_DOWN) {
-      lcd.setBacklight(YELLOW);
-    }
-    if (buttons & BUTTON_LEFT) {
-      lcd.setBacklight(GREEN);
-    }
-    if (buttons & BUTTON_RIGHT) {
-      lcd.setBacklight(TEAL);
-    }
-    if (buttons & BUTTON_SELECT) {
-      lcd.setBacklight(VIOLET);
-    }*/
-  //}//
-
-//
-////shouldn't need to touch below this
-////SerialLCD Functions
-//void selectLineOne(){  //puts the cursor at line 0 char 0.
-//   Serial.write(0xFE);   //command flag
-//   Serial.write(128);    //position
-//}
-//void selectLineTwo(){  //puts the cursor at line 2 char 0.
-//   Serial.write(0xFE);   //command flag
-//   Serial.write(192);    //position
-//}
-//void selectLineThree(){  //puts the cursor at line 3 char 0.
-//   Serial.write(0xFE);   //command flag
-//   Serial.write(148);    //position
-//}
-//void selectLineFour(){  //puts the cursor at line 4 char 0.
-//   Serial.write(0xFE);   //command flag
-//   Serial.write(212);    //position
-//}
-//void goTo(int position) { //position = line 1: 0-19, line 2: 20-39, etc, 79+ defaults back to 0
-//    if (position<20){ Serial.write(0xFE);   //command flag
-//                  Serial.write((position+128));    //position
-//    }
-//    else if (position<40){Serial.write(0xFE);   //command flag
-//                  Serial.write((position+128+64-20));    //position 
-//    }
-//    else if (position<60){Serial.write(0xFE);   //command flag
-//                  Serial.write((position+128+20-40));    //position
-//    }
-//    else if (position<80){Serial.write(0xFE);   //command flag
-//                  Serial.write((position+128+84-60));    //position              
-//    }
-//    else { goTo(0); }
-//}
-//void clearLCD(){
-//   Serial.write(0xFE);   //command flag
-//   Serial.write(0x01);   //clear command.
-//}
-//void backlightOn(){  //turns on the backlight
-//    Serial.write(0x7C);   //command flag for backlight stuff
-//    Serial.write(157);    //light level.
-//}
-//void backlightOff(){  //turns off the backlight
-//    Serial.write(0x7C);   //command flag for backlight stuff
-//    Serial.write(128);     //light level for off.
-//}
-//void backlight50(){  //sets the backlight at 50% brightness
-//    Serial.write(0x7C);   //command flag for backlight stuff
-//    Serial.write(143);     //light level for off.
-//}
-//void serCommand(){   //a general function to call the command flag for issuing all other commands   
-//  Serial.write(0xFE);
-//}
+       long newPosition = myEnc.read();    //this is reading in the position from a sensor called myEnc on pins 2 and 3
+       if (newPosition != oldPosition and newPosition > oldPosition  ) { //if newposition is actually new
+           sensValue = newPosition;  
+           oldPosition = newPosition;
+           theta = sensValue*360/4096; //setting theta
+           // calculates maximum angle (deg) pendulum reaches
+           //new calculations follow
+           Hf = r * sin(theta);
+           Hchange = Hinit - Hf;
+           E = mass * gravity * Hchange;
+           //new calcs end
+       }//endifcalc
+       //clearLCD();
+       //lcd.print(sensValue);
+       lcd.print(E); //print out the answer they are looking for
+       //delay(100); //idk if this is still needed
+       if(buttons){
+          if (buttons & BUTTON_SELECT){  //trying to escape loop
+               x = true;
+          }//endifinner
+       }//endif
+    }//end magic loop 
+} //endMain loop
 
 
 
