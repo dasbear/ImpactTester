@@ -35,10 +35,10 @@ const int Pi = 3.14159;
 
 //these are where the variables for h are set. if there are any changes to the impact device are this is used on a different device these will need to be adjusted in order for the calculations to be accurate
 int Hinit = 0;  //h initial
-int h30 = 0.7;  //h variable 30
-int h45 = 0;  //h variable 45
-int h60 = 0;  //h variable 60
-int h75 = 0;  //h variable 75
+int h30 = 0.6;  //h variable 30
+int h45 = 0.6828;  //h variable 45
+int h60 = 0.7464;  //h variable 60
+int h75 = 0.7864;  //h variable 75
 
 //this is the radius/arm length for the mass
 int r = 0.4; //r
