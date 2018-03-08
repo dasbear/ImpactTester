@@ -52,6 +52,8 @@ Adafruit_RGBLCDShield lcd = Adafruit_RGBLCDShield();
   int Hf;
   int Hchange;
   int E;
+  int Fa = 0;
+  int Ia = 0;
 
   //if the mass changes this will need to be adjusted
   double mass = 2.73;
@@ -83,29 +85,35 @@ void loop() {
       if (buttons & BUTTON_UP) {
         //set height to 75
         Hinit = h75;
+        Ia = 75;
         lcd.print("Theta = 75");
       }
       if (buttons & BUTTON_RIGHT) {
         //set theta to 60
         Hinit = h60;
+        Ia = 60;
         lcd.print("Theta = 60");
       }
       if (buttons & BUTTON_DOWN) {
         //set theta to 45
         Hinit = h45;
+        Ia = 45;
         lcd.print("Theta = 45");
       }
       if (buttons & BUTTON_LEFT) {
         //set theta to 30
         Hinit = h30;
+        Ia = 30;
         lcd.print("Theta = 30");
       }
       if (buttons & BUTTON_SELECT) {
         x = false;
+        lcd.clear();
+        //lcd.setCursor(0,0);
       }
     }
     while (x == false){
-       lcd.setCursor(0,1); //setting cursor to the second line of screen
+       
        long newPosition = myEnc.read();    //this is reading in the position from a sensor called myEnc on pins 2 and 3
        if (newPosition != oldPosition and newPosition > oldPosition  ) { //if newposition is actually new
            sensValue = newPosition;  
@@ -113,18 +121,24 @@ void loop() {
            theta = sensValue*360/4096; //setting theta
            // calculates maximum angle (deg) pendulum reaches
            //new calculations follow
-           Hf = r * sin(theta);
-           Hchange = Hinit - Hf;
-           E = mass * gravity * Hchange;
+           Hf = r * sin(theta); // calc final height
+           Hchange = Hinit - Hf; // calc for height change
+           E = mass * gravity * Hchange; //energy calc
+           Fa = theta - (Ia + 90); //calculating the final angle
            //new calcs end
        }//endifcalc
        //clearLCD();
        //lcd.print(sensValue);
+       lcd.setCursor(0,0); //setting cursor to the second line of screen
        lcd.print(E); //print out the answer they are looking for
+       lcd.setCursor(0,1); //setting cursor to the second line of screen
+       lcd.print(Fa);
        //delay(100); //idk if this is still needed
        if(buttons){
           if (buttons & BUTTON_SELECT){  //trying to escape loop
                x = true;
+               lcd.clear();
+               lcd.setCursor(0,0);
           }//endifinner
        }//endif
     }//end magic loop 
