@@ -34,26 +34,26 @@ Adafruit_RGBLCDShield lcd = Adafruit_RGBLCDShield();
 /******************************COLORS ARE NOT WORKING CURRENTLY**************************/
   long oldPosition  = -999;
   int maxHeight;
-  long sensValue = 0;
+  long sensValue = 0.0;
   double sensor;
   double theta;
   const int Pi = 3.14159; 
   bool x = true;
 
   //these are where the variables for h are set. if there are any changes to the impact device are this is used on a different device these will need to be adjusted in order for the calculations to be accurate
-  int Hinit = 0;  //h initial
+  int Hinit = 0.0;  //h initial
   int h30 = 0.6;  //h variable 30
   int h45 = 0.6828;  //h variable 45
   int h60 = 0.7464;  //h variable 60
   int h75 = 0.7864;  //h variable 75
 
   //this is the radius/arm length for the mass
-  int r = 0.4; //r
-  int Hf;
-  int Hchange;
-  int E;
-  int Fa = 0;
-  int Ia = 0;
+  double r = 0.4; //r
+  long Hf = 0.0;
+  long Hchange;
+  long E;
+  double Fa;
+  int Ia;
 
   //if the mass changes this will need to be adjusted
   double mass = 2.73;
@@ -61,11 +61,13 @@ Adafruit_RGBLCDShield lcd = Adafruit_RGBLCDShield();
 
   //these are the pins that the encoder is using to communicate with the board. avoid using pins with LEDs attached
   Encoder myEnc(2, 3); 
+  int y = 0;
+  
 
 void setup(){    
   //set LCD columns and rows
   lcd.begin(16, 2);
-  
+  Serial.begin(9600);
   //print a test message to the LCD
   lcd.print("Booting up, Please Hold");
   
@@ -75,6 +77,7 @@ void setup(){
   lcd.clear();
   //set the cursor to column 0, line 0
   lcd.setCursor(0, 0); //setting screen to write at the top row 
+  //int y = 0;
 }//endsetup
   
 
@@ -86,24 +89,41 @@ void loop() {
         //set height to 75
         Hinit = h75;
         Ia = 75;
+        //clear the lcd
+        Serial.print(75);
+        lcd.clear();
+        //set the cursor to column 0, line 0
+        lcd.setCursor(0, 0); //setting screen to write at the top row
         lcd.print("Theta = 75");
       }
       if (buttons & BUTTON_RIGHT) {
         //set theta to 60
         Hinit = h60;
         Ia = 60;
+        //clear the lcd
+        lcd.clear();
+        //set the cursor to column 0, line 0
+        lcd.setCursor(0, 0); //setting screen to write at the top row
         lcd.print("Theta = 60");
       }
       if (buttons & BUTTON_DOWN) {
         //set theta to 45
         Hinit = h45;
         Ia = 45;
+        //clear the lcd
+        lcd.clear();
+        //set the cursor to column 0, line 0
+        lcd.setCursor(0, 0); //setting screen to write at the top row
         lcd.print("Theta = 45");
       }
       if (buttons & BUTTON_LEFT) {
         //set theta to 30
         Hinit = h30;
         Ia = 30;
+        //clear the lcd
+        lcd.clear();
+        //set the cursor to column 0, line 0
+        lcd.setCursor(0, 0); //setting screen to write at the top row
         lcd.print("Theta = 30");
       }
       if (buttons & BUTTON_SELECT) {
@@ -114,8 +134,10 @@ void loop() {
     }
     while (x == false){
        
+       //Serial.print(y);
+       y = y + 1;
        long newPosition = myEnc.read();    //this is reading in the position from a sensor called myEnc on pins 2 and 3
-       if (newPosition != oldPosition and newPosition > oldPosition  ) { //if newposition is actually new
+       if (newPosition > oldPosition) { //if newposition is actually new
            sensValue = newPosition;  
            oldPosition = newPosition;
            theta = sensValue*360/4096; //setting theta
@@ -130,17 +152,22 @@ void loop() {
        //clearLCD();
        //lcd.print(sensValue);
        lcd.setCursor(0,0); //setting cursor to the second line of screen
-       lcd.print(E); //print out the answer they are looking for
+       lcd.print(theta); //print out the answer they are looking for
+       Serial.print(Hf);
+       Serial.print('\n');
+       //Serial.print(x);
+       //Serial.print('\n');
+       //Serial.print(E);
        lcd.setCursor(0,1); //setting cursor to the second line of screen
        lcd.print(Fa);
        //delay(100); //idk if this is still needed
-       if(buttons){
+       /*if (buttons){
           if (buttons & BUTTON_SELECT){  //trying to escape loop
                x = true;
                lcd.clear();
                lcd.setCursor(0,0);
-          }//endifinner
-       }//endif
+          }//endifinner*/
+       //}//endif
     }//end magic loop 
 } //endMain loop
 
